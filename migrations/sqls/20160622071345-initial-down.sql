@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS translations;
+DROP TABLE IF EXISTS countries;
+DROP TABLE IF EXISTS languages;

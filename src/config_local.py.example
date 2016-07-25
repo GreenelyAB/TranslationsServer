@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+from sys import stdout as _stdout
+
+from config import LOGGING
+
+
+SENTRY_DSN = False
+
+LOGS_LOCATION = False
+
+TRANSLATIONS_SERVER_DB_URL = ""
+
+WORKERS = 2
+
+LOGGING["handlers"]["stdout_handler"] = {
+    "class": "logging.StreamHandler",
+    "stream": _stdout,
+    "level": "DEBUG",
+    "formatter": "standard_formatter",
+}
+
+LOGGING["root"]["handlers"].append("stdout_handler")
+
+LOGGING["loggers"]["__main__"]["level"] = "DEBUG"
+
+LOGGING["loggers"]["translations_server"]["level"] = "DEBUG"

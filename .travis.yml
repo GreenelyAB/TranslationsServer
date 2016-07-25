@@ -1,0 +1,27 @@
+dist: trusty
+addons:
+  postgresql: '9.4'
+language: python
+python:
+  - '3.5'
+env:
+  global:
+    - LOGS_LOCATION="False"
+    - SENTRY_DSN="False"
+    - TRANSLATIONS_SERVER_DB_URL="postgres://postgres:@127.0.0.1/translations_server_test"
+    - TRANSLATIONS_SERVER_TEST_DB_URL="postgres://postgres:@127.0.0.1/translations_server_test"
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+cache:
+  - pip
+before_install:
+  - sudo /etc/init.d/postgresql start 9.4
+install:
+  - npm install -g grunt-cli >/dev/null
+  - npm install >/dev/null
+  - pip install -r requirements.txt
+before_script:
+  - psql -c 'create database translations_server_test;' -U postgres
+script:
+  - cd test
+  - ./run_tests.py
