@@ -35,8 +35,7 @@ LOGGING = {
     "handlers": {},
     "root": {
         "handlers": [],
-        "level": "DEBUG",
-        "propagate": True,
+        "level": "DEBUG"
     },
     "loggers": {
         "__main__": {
