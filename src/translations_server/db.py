@@ -3,7 +3,7 @@ from translations_server.lib import db
 
 
 _get_translation = db.SelectOne('''
-    SELECT COALESCE(translation_text, translation_key)
+    SELECT translation_text
     FROM translations
     JOIN languages USING (language_id)
     LEFT JOIN countries USING (country_id)

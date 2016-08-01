@@ -52,6 +52,8 @@ _TRANSLATION5_A = "k5_a"
 
 _TRANSLATION5_B = "k5_b"
 
+_KEY_MISSING = "kmissing"
+
 _TIMEOUT = 300  # msec
 
 
@@ -164,3 +166,13 @@ class TestServer(PostgresTestDB, TestCase):
         self.assertEqual(translation, _TRANSLATION5_A)  # and not B
         translation = self._request_translation(_LANGUAGE2, None, _KEY5, None)
         self.assertEqual(translation, _TRANSLATION5_B)  # and not A
+
+    @patch.object(getLogger("translations_server.server"), "warning")
+    def test_missing_translation(self, warning_log):
+        """ Request a translation for which the key does not exist and check
+        for the right response: the key itself, plus a warning.
+        """
+        translation = self._request_translation(
+            _LANGUAGE, None, _KEY_MISSING, None)
+        self.assertEqual(translation, _KEY_MISSING)
+        self.assertTrue(warning_log.called)

@@ -25,7 +25,15 @@ def _translate(lang, country, *key_plural_pairs):
         key_plural_pairs[::2], key_plural_pairs[1::2])
     for key, plural in key_plural_pairs:
         plural = int(plural) if plural else None
-        yield get_translation(lang, country, key, plural) or key
+        translation = get_translation(lang, country, key, plural)
+        if translation is None:
+            extra = {
+                "lang": lang,
+                "country": country,
+                "plural": plural
+            }
+            _LOG.warning("Missing translation: %s", key, extra=extra)
+        yield translation or key
 
 
 def _handle_request(parts):

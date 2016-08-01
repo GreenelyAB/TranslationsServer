@@ -20,6 +20,7 @@ def _connect_to_debug_server(server):
 
 if __name__ == "__main__":
     path.append("../src")
+    __import__("config")  # set up logging
     parser = ArgumentParser()
     parser.add_argument(
         "-d", "--remote-debug", type=str,
