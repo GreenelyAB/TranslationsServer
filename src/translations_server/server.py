@@ -170,7 +170,7 @@ def _shut_down_workers(
 
 
 def run(port):
-    """ Run a translations server at a spesific port.
+    """ Run a translations server at a specific port.
 
     It always listens on all available network devices!
     """
