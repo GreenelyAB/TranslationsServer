@@ -1,3 +1,4 @@
 pyzmq==15.2.0
 psycopg2==2.6.1
 DBQuery==0.3.1
+raven==5.19.0
