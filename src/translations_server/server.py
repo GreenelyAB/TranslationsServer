@@ -184,7 +184,8 @@ def run(port):
     backend.bind(_REQUEST_ENDPOINT)
     try:
         worker_threads, worker_identities = _start_workers(
-            context, sync_socket, config.WORKERS, 1000)
+            context, sync_socket, int(config.WORKERS),
+            int(config.TIMEOUT_IN_MILLISECONDS))
         _LOG.debug("Running device...")
         try:
             proxy(frontend, backend)

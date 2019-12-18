@@ -50,5 +50,7 @@ node_modules/
 .project
 .pydevsrc/
 
+#PyCharm
+.idea/
 # Configuration
 src/config_local.py
