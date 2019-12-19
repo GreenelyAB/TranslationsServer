@@ -23,6 +23,8 @@ DB_MAX_CONNECTIONS = 10
 
 WORKERS = 20
 
+TIMEOUT_IN_MILLISECONDS = 1000
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
