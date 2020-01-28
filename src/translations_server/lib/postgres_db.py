@@ -81,5 +81,10 @@ class _PostgresConnectionPoolDB(PostgresDB):
             self._connection = None
         super().close()
 
+    def putback(self):
+        if self._connection is not None:
+            _CONNECTION_POOL.putconn(self._local._connection)
+            self._connection = None
+
 
 db = _PostgresConnectionPoolDB()
