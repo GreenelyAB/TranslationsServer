@@ -69,8 +69,8 @@ def _handle_request(parts):
                     "Could not encode translation!",
                     extra={"encoding": _ENCODING})
             finally:
-                # Put connection back in the DB Pool
-                db.putback()
+                # Close DB connection if any was opened.
+                db.close()
     return translations
 
 
@@ -197,7 +197,6 @@ def run(port):
     finally:
         if frontend is not None:
             frontend.close()
-        db.close()
         backend.close()
         sync_socket.close()
     _LOG.debug("Done")
