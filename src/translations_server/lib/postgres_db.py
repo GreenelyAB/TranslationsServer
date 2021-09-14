@@ -64,13 +64,18 @@ class _PostgresConnectionPoolDB(PostgresDB):
     def _orig_retry(self, value):
         self._local._orig_retry = value
 
+    def _reconnect(self):
+        if self._connection_pool:
+            self._connection_pool.closeall()
+        self._connect()
+
     def _connect(self):
         global _CONNECTION_POOL
-        if _CONNECTION_POOL is None:
+        if _CONNECTION_POOL is None or _CONNECTION_POOL.closed:
             _CONNECTION_POOL = ThreadedConnectionPool(
                 config.DB_MIN_CONNECTIONS, config.DB_MAX_CONNECTIONS,
                 **config.DB_PARAMS)
-        if self._connection is not None:
+        if self._connection is not None and self._connection.closed == 0:
             raise RuntimeError("Connection still exists.")
         self._connection = _CONNECTION_POOL.getconn()
         self._connection.set_session(autocommit=True)
