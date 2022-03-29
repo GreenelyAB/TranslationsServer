@@ -1,12 +1,16 @@
-# -*- coding: utf-8 -*-
+import logging
 from logging.config import dictConfig as _dictConfig
 from os import getenv as _getenv
+
+import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
 from urllib.parse import urlparse as _urlparse
 
 
 DEFAULT_PORT = 5512
 
 SENTRY_DSN = _getenv("SENTRY_DSN")
+ENVIRONMENT = _getenv("ENVIRONMENT")
 
 LOGS_LOCATION = _getenv("LOGS_LOCATION")
 
@@ -81,12 +85,17 @@ _check_vars()
 # Provides the ability to deactivate Sentry logging on the development and
 # testing environment by setting SENTRY_DSN="False"
 if SENTRY_DSN not in (False, "False"):
-    LOGGING["handlers"]["sentry_handler"] = {
-        "level": "INFO",
-        "class": "raven.handlers.logging.SentryHandler",
-        "dsn": SENTRY_DSN
-    }
-    LOGGING["root"]["handlers"].append("sentry_handler")
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,  # Capture info and above as breadcrumbs
+        event_level=logging.WARNING  # Send warnings and errors as events
+    )
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            sentry_logging,
+        ],
+        environment=ENVIRONMENT,
+    )
 
 # Provides the ability to deactivate file logging on the development
 # and testing environment by setting LOGS_LOCATION="False"
