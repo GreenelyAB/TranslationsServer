@@ -1,9 +1,9 @@
-dist: trusty
+dist: jammy
 addons:
-  postgresql: '9.4'
+  postgresql: '13.4'
 language: python
 python:
-  - '3.5'
+  - '3.10'
 env:
   global:
     - LOGS_LOCATION="False"
@@ -15,7 +15,7 @@ before_cache:
 cache:
   - pip
 before_install:
-  - sudo /etc/init.d/postgresql start 9.4
+  - sudo /etc/init.d/postgresql start 13.4
 install:
   - npm install -g grunt-cli >/dev/null
   - npm install >/dev/null
