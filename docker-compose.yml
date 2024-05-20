@@ -1,0 +1,73 @@
+version: "3.9"
+
+x-project: &projects
+  build:
+    context: .
+    ssh:
+      - default
+  platform: linux/amd64
+  networks:
+    - greenely-network
+  env_file:
+    - dev.env
+
+services:
+  translations-service:
+    <<: *projects
+    command: ["/usr/local/bin/python", "./main.py"]
+    ports:
+      - "5512:5512"
+    volumes:
+      - .:/app
+    depends_on:
+      translations-service-psql:
+        condition: service_healthy
+      translations-service-data-migration:
+        condition: service_completed_successfully
+    networks:
+      - greenely-network
+  translations-service-psql:
+    image: postgres:13.4
+    restart: always
+    environment:
+      - POSTGRES_USER=greenely
+      - POSTGRES_PASSWORD=qwer1234
+      - POSTGRES_DB=translations_service
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks:
+      - greenely-network
+    healthcheck:
+      test: pg_isready --dbname=translations_service --host=localhost --port=5432 --username=greenely
+      start_period: 10s
+      interval: 5s
+      retries: 2
+      timeout: 5s
+  translations-service-data-migration:
+    <<: *projects
+    command: ["/app/node_modules/grunt/bin/grunt", "migrate:up"]
+    working_dir: '/app'
+    depends_on:
+      translations-service-psql:
+        condition: service_healthy
+    restart: 'no'
+    volumes:
+      - ./migrations:/app/migrations
+  translations-service-psql-test:
+    image: postgres:13.10
+    environment:
+      - POSTGRES_USER=greenely
+      - POSTGRES_PASSWORD=qwer1234
+      - POSTGRES_DB=translations_service_test
+    logging:
+      options:
+        max-size: 1m
+        max-file: "1"
+    networks:
+      - greenely-network
+
+networks:
+  greenely-network:
+    name: greenely-network
