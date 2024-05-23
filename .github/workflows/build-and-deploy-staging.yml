@@ -1,0 +1,30 @@
+name: Build images and deploy to staging
+
+# The workflow can be triggered in two ways
+# - A comment on a Pull request -> event: issue_comment
+#   We filter on only newly created comments and disregard edited and deleted.
+# - Manually -> event: workflow_dispatch
+#   This is triggered through the GitHub UI.
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build-translations-service:
+    # If an issue is a pull request, is labled with "deploy-staging", and gets a comment '+deploy' deploy to staging
+    # Or, if the workflow is run manually
+    if: ${{ (github.event.issue.pull_request && github.event.comment.body =='+deploy' && contains(github.event.issue.labels.*.name, 'deploy-staging')) || github.event_name == 'workflow_dispatch' }}
+    uses: GreenelyAB/workflows/.github/workflows/build-and-push.yml@main
+    secrets: inherit
+    with:
+      service-name: translations-service
+      environment: staging
+  deploy-translations-service:
+    needs: build-translations-service
+    uses: GreenelyAB/workflows/.github/workflows/deploy-to-ecs.yml@main
+    secrets: inherit
+    with:
+      cluster: translations-service
+      environment: staging
+      run_deployment_task: true
